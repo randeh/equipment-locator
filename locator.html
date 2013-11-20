@@ -4,24 +4,117 @@
     <title>
       Equipment Locator
     </title>
-    <!-- put javascript & css in this file for portability -->
+    <script>
+      var locate = function() {
+        var equipmentReq = document.getElementById('equipmentNum').value;
+        var concentratorReq = document.getElementById('concentratorNum').value;
+        var lctReq = document.getElementById('lctNum').value;
+        var cardReq = document.getElementById('cardNum').value;
+        var rowReq = document.getElementById('rowNum').value;
+        if(equipmentReq != "") {
+          equipmentRes = equipmentReq;
+          var concentratorRes = Math.floor(equipmentReq / 2048);
+          var concentratorRemainder = equipmentReq % 2048;
+          var lctRes = Math.floor(concentratorRemainder / 64);
+          var lctRemainder = concentratorRemainder % 64;
+          // Work out which pair of cards the Equipment Number falls into, then
+          // adjust for 1-indexing and which of the pair the EN is in (odd/even)
+          var cardRes = (Math.floor(lctRemainder / 16) * 2) + 1 + (lctRemainder % 2);
+          // Find the position within the pair of cards (0-15),
+          // then work out the row and adjust for 1-indexing
+          var rowRes = Math.floor((lctRemainder % 16) / 2) + 1;
+        } else {
+          // TODO: from entered data, work backwards and find equipment number
+        }
+        // Make sure the all data entered is consistent
+        var requestData = new Array(equipmentReq, concentratorReq, lctReq, lctReq, cardReq, rowReq);
+        var resultData = new Array(equipmentRes, concentratorRes, lctRes, lctRes, cardRes, rowRes);
+        for(var i = 0; i < requestData.length; i++) {
+          if(requestData[i] != "" && resultData[i] != requestData[i]) {
+            alert("Inconsistent data entered.");
+            return;
+          }
+        }
+        // Display results
+        document.getElementById('equipmentNum').value = equipmentRes;
+        document.getElementById('concentratorNum').value = concentratorRes;
+        document.getElementById('lctNum').value = lctRes;
+        document.getElementById('cardNum').value = cardRes;
+        document.getElementById('rowNum').value = rowRes;
+        // Make values read only
+        document.getElementById('equipmentNum').readOnly = true;
+        document.getElementById('concentratorNum').readOnly = true;
+        document.getElementById('lctNum').readOnly = true;
+        document.getElementById('cardNum').readOnly = true;
+        document.getElementById('rowNum').readOnly = true;
+        // Change button
+        document.getElementById('locateBtn').value = "Search Again";
+        document.getElementById('locateBtn').onclick = clear;
+      };
+
+      var clear = function() {
+        // Clear all values
+        document.getElementById('equipmentNum').value = "";
+        document.getElementById('concentratorNum').value = "";
+        document.getElementById('lctNum').value = "";
+        document.getElementById('cardNum').value = "";
+        document.getElementById('rowNum').value = "";
+        // Make values editable
+        document.getElementById('equipmentNum').readOnly = false;
+        document.getElementById('concentratorNum').readOnly = false;
+        document.getElementById('lctNum').readOnly = false;
+        document.getElementById('cardNum').readOnly = false;
+        document.getElementById('rowNum').readOnly = false;
+        // Reset button
+        document.getElementById('locateBtn').value = "Locate";
+        document.getElementById('locateBtn').onclick = locate;
+      }
+
+      window.onload = function() {
+        document.getElementById('locateBtn').onclick = locate;
+      }
+    </script>
+    <style>
+      #container {
+        width: 100%;
+        max-width: 300px;
+      }
+      label {
+        float: left;
+        min-width: 150px;
+        text-align: right;
+        margin-right: 5px;
+      }
+      #container #locateBtn {
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
-    <label for="equipmentNum">Equipment Number:</label>
-    <input id="equipmentNum" type="number" min="0" max="100000">
-    <br />
-    <label for="concentratorNum">Concentrator Number:</label>
-    <input id="concentratorNum" type="number" min="0" max="100">
-    <br />
-    <label for="lctNum">LCT Number:</label>
-    <input id="lctNum" type="number" min="0" max="31">
-    <br />
-    <label for="cardNum">Card Number:</label>
-    <input id="cardNum" type="number" min="1" max="8">
-    <br />
-    <label for="rowNum">Row Number:</label>
-    <input id="rowNum" type="number" min="1" max="8">
-    <br />
-    <input id="locateBtn" type="submit" value="Locate">
+    <div id="container">
+      <div>
+        <label for="equipmentNum">Equipment Number:</label>
+        <input id="equipmentNum" type="number" min="0" max="100000">
+      </div>
+      <div>
+        <label for="concentratorNum">Concentrator:</label>
+        <input id="concentratorNum" type="number" min="0" max="100">
+      </div>
+      <div>
+        <label for="lctNum">LCT:</label>
+        <input id="lctNum" type="number" min="0" max="31">
+      </div>
+      <div>
+        <label for="cardNum">Card:</label>
+        <input id="cardNum" type="number" min="1" max="8">
+      </div>
+      <div>
+        <label for="rowNum">Row:</label>
+        <input id="rowNum" type="number" min="1" max="8">
+      </div>
+      <div>
+        <input id="locateBtn" type="submit" value="Locate">
+      </div>
+    </div>
   </body>
 </html>
